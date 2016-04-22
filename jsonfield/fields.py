@@ -50,7 +50,7 @@ class JSONCharFormField(JSONFormFieldBase, fields.CharField):
     pass
 
 
-class JSONFieldBase(six.with_metaclass(SubfieldBase, models.Field)):
+class JSONFieldBase(models.Field):
 
     def __init__(self, *args, **kwargs):
         self.dump_kwargs = kwargs.pop('dump_kwargs', {
@@ -85,6 +85,9 @@ class JSONFieldBase(six.with_metaclass(SubfieldBase, models.Field)):
         """The SubfieldBase metaclass calls pre_init instead of to_python, however to_python
         is still necessary for Django's deserializer"""
         return value
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
     def get_db_prep_value(self, value, connection, prepared=False):
         """Convert JSON object to a string"""
